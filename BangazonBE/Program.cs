@@ -1,3 +1,9 @@
+using BangazonBE.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
+   
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
