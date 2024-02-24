@@ -87,10 +87,7 @@ app.MapGet("/users/name-search", (BangazonBEDbContext db, string query) =>
     {
         return Results.NotFound("No users found with that name.");
     }
-    else
-    {
-        return Results.Ok(filteredUsers);
-    }
+    return Results.Ok(filteredUsers);
 });
 
 //Get all products
@@ -103,6 +100,25 @@ app.MapGet("/products", (BangazonBEDbContext db) =>
 app.MapGet("/users/{sellerId}/products", (BangazonBEDbContext db, int sellerId) =>
 {
     return db.Products.Where(p => p.SellerId == sellerId).ToList();
+});
+
+//Search for product by name
+app.MapGet("/products/search", (BangazonBEDbContext db, string query) =>
+{
+    if (string.IsNullOrWhiteSpace(query))
+    {
+        return Results.BadRequest("Search query cannot be empty");
+    }
+    query = query.ToLower();
+
+    var filteredProducts = db.Products.Where(p => p.Name.ToLower().Contains(query))
+    .ToList();
+
+    if (filteredProducts.Count == 0)
+    {
+        return Results.NotFound("No products matching search query.");
+    }
+    return Results.Ok(filteredProducts);
 });
 
 
