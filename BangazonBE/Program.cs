@@ -121,6 +121,7 @@ app.MapGet("/products/search", (BangazonBEDbContext db, string query) =>
     return Results.Ok(filteredProducts);
 });
 
+//Create new product
 app.MapPost("/products", (BangazonBEDbContext db, Product newProduct) =>
 {
     try
@@ -131,8 +132,31 @@ app.MapPost("/products", (BangazonBEDbContext db, Product newProduct) =>
     }
     catch
     {
-        return Results.BadRequest("Couldn't create product, pleasetry again!");
+        return Results.BadRequest("Couldn't create product, please try again!");
     }
+});
+
+//Edit existing product
+app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedProduct) =>
+{
+    var product = db.Products.FirstOrDefault(p => p.Id == id);
+
+    if (product == null)
+    {
+        return Results.NotFound("No product matching the provided Id.");
+    }
+
+    product.Name = updatedProduct.Name;
+    product.Description = updatedProduct.Description;
+    product.Price = updatedProduct.Price;
+    product.ImageUrl = updatedProduct.ImageUrl;
+    product.QuantityAvailable = updatedProduct.QuantityAvailable;
+    product.CategoryId = updatedProduct.CategoryId;
+
+    db.SaveChanges();
+
+    return Results.Ok(product);
+
 });
 
 
