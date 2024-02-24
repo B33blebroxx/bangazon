@@ -36,6 +36,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//Post new user
+app.MapPost("/user", (BangazonBEDbContext db, User newUser) =>
+{
+    try
+    {
+        db.Users.Add(newUser);
+        db.SaveChanges();
+        return Results.Created($"/user/{newUser.Id}", newUser);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Couldn't create new user, please try again!");
+    }
+});
 
 
 app.Run();
