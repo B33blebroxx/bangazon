@@ -38,7 +38,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //Post new user
-app.MapPost("/users", (BangazonBEDbContext db, User newUser) =>
+app.MapPost("/register", (BangazonBEDbContext db, User newUser) =>
 {
     try
     {
@@ -93,11 +93,19 @@ app.MapGet("/users/name-search", (BangazonBEDbContext db, string query) =>
     }
 });
 
+//Get all products
+app.MapGet("/products", (BangazonBEDbContext db) =>
+{
+    return db.Products.ToList();
+});
+
 //Get seller's products
 app.MapGet("/users/{sellerId}/products", (BangazonBEDbContext db, int sellerId) =>
 {
     return db.Products.Where(p => p.SellerId == sellerId).ToList();
 });
+
+
 
 app.Run();
 
