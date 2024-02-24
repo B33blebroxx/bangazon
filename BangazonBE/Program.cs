@@ -2,6 +2,7 @@ using BangazonBE.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Hosting;
 
 
 
@@ -51,11 +52,13 @@ app.MapPost("/users", (BangazonBEDbContext db, User newUser) =>
     }
 });
 
+//Get all users
 app.MapGet("/users", (BangazonBEDbContext db) =>
 {
     return db.Users.ToList();
 });
 
+//Get user by id
 app.MapGet("/users/{id}", (BangazonBEDbContext db, int id) =>
 {
     User chosenUser = db.Users.FirstOrDefault(u => u.Id == id);
@@ -64,6 +67,30 @@ app.MapGet("/users/{id}", (BangazonBEDbContext db, int id) =>
         return Results.NotFound("User not found.");
     }
     return Results.Ok(chosenUser);
+});
+
+//Search for user by name
+app.MapGet("/users/name-search", (BangazonBEDbContext db, string query) =>
+{
+    if (string.IsNullOrWhiteSpace(query))
+    {
+        return Results.BadRequest("Search query cannot be empty");
+    }
+    query = query.ToLower();
+
+    // Filter users whose first name or last name matches the query
+    var filteredUsers = db.Users
+         .Where(u => (u.FirstName.ToLower() + " " + u.LastName.ToLower()).Contains(query))
+         .ToList();
+
+    if (filteredUsers.Count == 0)
+    {
+        return Results.NotFound("No users found with that name.");
+    }
+    else
+    {
+        return Results.Ok(filteredUsers);
+    }
 });
 
 app.Run();
