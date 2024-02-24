@@ -159,6 +159,21 @@ app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedP
 
 });
 
+//Delete product
+app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
+{
+    var productToDelete = db.Products.FirstOrDefault(p => p.Id == id);
+    
+    if (productToDelete == null)
+    {
+        return Results.BadRequest("No product matching provided Id");
+    }
+
+    db.Products.Remove(productToDelete);
+    db.SaveChanges();
+    return Results.Ok("Product deleted");
+});
+
 
 app.Run();
 
