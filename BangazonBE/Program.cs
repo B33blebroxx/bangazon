@@ -121,6 +121,19 @@ app.MapGet("/products/search", (BangazonBEDbContext db, string query) =>
     return Results.Ok(filteredProducts);
 });
 
+app.MapPost("/products", (BangazonBEDbContext db, Product newProduct) =>
+{
+    try
+    {
+        db.Products.Add(newProduct);
+        db.SaveChanges();
+        return Results.Created($"/products/{newProduct.Id}", newProduct);
+    }
+    catch
+    {
+        return Results.BadRequest("Couldn't create product, pleasetry again!");
+    }
+});
 
 
 app.Run();
