@@ -69,7 +69,7 @@ app.MapGet("/users/{id}", (BangazonBEDbContext db, int id) =>
     return Results.Ok(chosenUser);
 });
 
-//Search for user by name
+//Search for user by first name, last name, or both
 app.MapGet("/users/name-search", (BangazonBEDbContext db, string query) =>
 {
     if (string.IsNullOrWhiteSpace(query))
@@ -91,6 +91,12 @@ app.MapGet("/users/name-search", (BangazonBEDbContext db, string query) =>
     {
         return Results.Ok(filteredUsers);
     }
+});
+
+//Get seller's products
+app.MapGet("/users/{sellerId}/products", (BangazonBEDbContext db, int sellerId) =>
+{
+    return db.Products.Where(p => p.SellerId == sellerId).ToList();
 });
 
 app.Run();
