@@ -37,7 +37,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //Post new user
-app.MapPost("/user", (BangazonBEDbContext db, User newUser) =>
+app.MapPost("/users", (BangazonBEDbContext db, User newUser) =>
 {
     try
     {
@@ -51,6 +51,15 @@ app.MapPost("/user", (BangazonBEDbContext db, User newUser) =>
     }
 });
 
+app.MapGet("/users/{id}", (BangazonBEDbContext db, int id) =>
+{
+    User chosenUser = db.Users.FirstOrDefault(u => u.Id == id);
+    if (chosenUser == null)
+    {
+        return Results.NotFound("User not found.");
+    }
+    return Results.Ok(chosenUser);
+});
 
 app.Run();
 
