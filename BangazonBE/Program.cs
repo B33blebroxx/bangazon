@@ -51,6 +51,11 @@ app.MapPost("/users", (BangazonBEDbContext db, User newUser) =>
     }
 });
 
+app.MapGet("/users", (BangazonBEDbContext db) =>
+{
+    return db.Users.ToList();
+});
+
 app.MapGet("/users/{id}", (BangazonBEDbContext db, int id) =>
 {
     User chosenUser = db.Users.FirstOrDefault(u => u.Id == id);
