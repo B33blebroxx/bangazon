@@ -61,7 +61,7 @@ app.MapGet("/users", (BangazonBEDbContext db) =>
 //Get user by id
 app.MapGet("/users/{id}", (BangazonBEDbContext db, int id) =>
 {
-    User chosenUser = db.Users.FirstOrDefault(u => u.Id == id);
+    User chosenUser = db.Users.SingleOrDefault(u => u.Id == id);
     if (chosenUser == null)
     {
         return Results.NotFound("User not found.");
@@ -139,7 +139,7 @@ app.MapPost("/products", (BangazonBEDbContext db, Product newProduct) =>
 //Edit existing product
 app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedProduct) =>
 {
-    var product = db.Products.FirstOrDefault(p => p.Id == id);
+    var product = db.Products.SingleOrDefault(p => p.Id == id);
 
     if (product == null)
     {
@@ -162,7 +162,7 @@ app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedP
 //Delete product
 app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
 {
-    var productToDelete = db.Products.FirstOrDefault(p => p.Id == id);
+    var productToDelete = db.Products.SingleOrDefault(p => p.Id == id);
     
     if (productToDelete == null)
     {
@@ -172,6 +172,12 @@ app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
     db.Products.Remove(productToDelete);
     db.SaveChanges();
     return Results.Ok("Product deleted");
+});
+
+//Get orders by Id
+app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
+{
+    return db.Orders.Where(o => o.Id == id).ToList();
 });
 
 
