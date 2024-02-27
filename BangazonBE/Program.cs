@@ -177,7 +177,22 @@ app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
 //Get orders by Id
 app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
 {
-    return db.Orders.Where(o => o.Id == id).ToList();
+    return db.Orders.Where(o => o.Id == id).Include(p => p.Products).ToList();
+});
+
+//Create Order
+app.MapPost("/orders", (BangazonBEDbContext db, Order newOrder) =>
+{
+    try
+    {
+        db.Orders.Add(newOrder);
+        db.SaveChanges();
+        return Results.Created($"/orders/{newOrder.Id}", newOrder);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Unable to create order, please try again.");
+    }
 });
 
 
