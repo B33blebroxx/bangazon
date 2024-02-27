@@ -256,6 +256,19 @@ app.MapDelete("/orders/{orderId}/{productId}", (BangazonBEDbContext db, int orde
     return Results.Ok("Product removed from order.");
 });
 
+//Delete order
+app.MapDelete("/orders/{id}", (BangazonBEDbContext db, int id) =>
+{
+    var order = db.Orders.SingleOrDefault(o => o.Id == id);
+
+    if (order == null)
+    {
+        return Results.NotFound("Order not found.");
+    }
+    db.Orders.Remove(order);
+    db.SaveChanges();
+    return Results.Ok("Order deleted");
+});
 
 app.Run();
 
