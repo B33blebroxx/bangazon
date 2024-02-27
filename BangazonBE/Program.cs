@@ -178,7 +178,7 @@ app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
 //Get orders by Id
 app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
 {
-    return db.Orders.Include(p => p.Products).Where(o => o.Id == id).ToList();
+    return db.Orders.Where(o => o.Id == id).Include(p => p.Products).ToList();
 });
 
 //Create Order
@@ -216,6 +216,21 @@ app.MapPost("/orders/addProduct", (BangazonBEDbContext db, addProductDTO newProd
     order.Products.Add(product);
     db.SaveChanges();
     return Results.Created($"/orders/addProduct", newProduct);
+});
+
+//Patch order
+app.MapPatch("/orders/{id}", (BangazonBEDbContext db, int id, Order updatedOrder) =>
+{
+    var order = db.Orders.SingleOrDefault(o => o.Id == id);
+
+    if (order == null)
+    {
+        return Results.NotFound("Order not found");
+    }
+
+    order.IsComplete = updatedOrder.IsComplete;
+    order.PaymentTypeId = updatedOrder.PaymentTypeId;
+    db.SaveChanges();
 });
 
 
