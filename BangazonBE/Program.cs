@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Hosting;
+using BangazonBE.DTOs;
 
 
 
@@ -177,7 +178,7 @@ app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
 //Get orders by Id
 app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
 {
-    return db.Orders.Where(o => o.Id == id).Include(p => p.Products).ToList();
+    return db.Orders.Include(p => p.Products).Where(o => o.Id == id).ToList();
 });
 
 //Create Order
@@ -193,6 +194,28 @@ app.MapPost("/orders", (BangazonBEDbContext db, Order newOrder) =>
     {
         return Results.BadRequest("Unable to create order, please try again.");
     }
+});
+
+//Add product to order
+app.MapPost("/orders/addProduct", (BangazonBEDbContext db, addProductDTO newProduct) =>
+{
+    var order = db.Orders.Include(o => o.Products).FirstOrDefault(o => o.Id == newProduct.OrderId);
+
+    if (order == null)
+    {
+        return Results.NotFound("No order found.");
+    }
+
+    var product = db.Products.Find(newProduct.ProductId);
+
+    if (product == null)
+    {
+        return Results.NotFound("Product not found.");
+    }
+
+    order.Products.Add(product);
+    db.SaveChanges();
+    return Results.Created($"/orders/addProduct", newProduct);
 });
 
 
