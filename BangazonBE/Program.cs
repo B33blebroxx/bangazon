@@ -97,6 +97,25 @@ app.MapGet("/products", (BangazonBEDbContext db) =>
     return db.Products.ToList();
 });
 
+// Get Orders
+app.MapGet("/orders", (BangazonBEDbContext db) =>
+{
+    var orders = db.Orders.ToList();
+    return Results.Ok(orders);
+});
+
+//Get single product by product Id
+app.MapGet("/products/{productId}", (BangazonBEDbContext db, int productId) =>
+{
+    Product chosenProduct = db.Products.SingleOrDefault(p => p.Id == productId);
+
+    if (chosenProduct == null)
+    {
+        return Results.NotFound("Product not found.");
+    }
+    return Results.Ok(chosenProduct);
+});
+
 //Get seller's products
 app.MapGet("/users/{sellerId}/products", (BangazonBEDbContext db, int sellerId) =>
 {
@@ -176,7 +195,7 @@ app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
 });
 
 //Get orders by Id
-app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
+app.MapGet("/orders/{id}", (BangazonBEDbContext db, int id) =>
 {
     return db.Orders.Where(o => o.Id == id).Include(p => p.Products).ToList();
 });
