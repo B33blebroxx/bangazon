@@ -231,6 +231,7 @@ app.MapPatch("/orders/{id}", (BangazonBEDbContext db, int id, Order updatedOrder
     order.IsComplete = updatedOrder.IsComplete;
     order.PaymentTypeId = updatedOrder.PaymentTypeId;
     db.SaveChanges();
+    return Results.Ok("Order completed");
 });
 
 
