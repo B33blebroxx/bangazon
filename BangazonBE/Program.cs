@@ -177,7 +177,7 @@ app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
 //Get orders by Id
 app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
 {
-    return db.Orders.Where(o => o.Id == id).ToList();
+    return db.Orders.Where(o => o.Id == id).Include(p => p.Products).ToList();
 });
 
 //Create Order
