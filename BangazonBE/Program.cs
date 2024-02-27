@@ -180,6 +180,21 @@ app.MapGet("/orders", (BangazonBEDbContext db, int id) =>
     return db.Orders.Where(o => o.Id == id).ToList();
 });
 
+//Create Order
+app.MapPost("/orders", (BangazonBEDbContext db, Order newOrder) =>
+{
+    try
+    {
+        db.Orders.Add(newOrder);
+        db.SaveChanges();
+        return Results.Created($"/orders/{newOrder.Id}", newOrder);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Unable to create order, please try again.");
+    }
+});
+
 
 app.Run();
 
