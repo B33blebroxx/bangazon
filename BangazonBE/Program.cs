@@ -289,5 +289,11 @@ app.MapDelete("/orders/{id}", (BangazonBEDbContext db, int id) =>
     return Results.Ok("Order deleted");
 });
 
+//Get Categories
+app.MapGet("/categories", (BangazonBEDbContext db) =>
+{
+    return db.Categories.ToList();
+});
+
 app.Run();
 
