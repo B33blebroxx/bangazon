@@ -234,6 +234,28 @@ app.MapPatch("/orders/{id}", (BangazonBEDbContext db, int id, Order updatedOrder
     return Results.Ok("Order completed");
 });
 
+//Delete product from order
+app.MapDelete("/orders/{orderId}/{productId}", (BangazonBEDbContext db, int orderId, int productId) =>
+{
+    var order = db.Orders.Include(o => o.Products).SingleOrDefault(o => o.Id == orderId);
+    
+    if (order == null)
+    {
+        return Results.NotFound("Order not found.");
+    }
+
+    var product = db.Products.Find(productId);
+
+    if (product == null)
+    {
+        return Results.NotFound("Product not found.");
+    }
+
+    order.Products.Remove(product);
+    db.SaveChanges();
+    return Results.Ok("Product removed from order.");
+});
+
 
 app.Run();
 
