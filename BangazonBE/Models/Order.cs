@@ -8,6 +8,7 @@
 
         public int? PaymentTypeId { get; set; }
 
+
         public ICollection<Product>? Products { get; set; }
     }
 }

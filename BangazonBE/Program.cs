@@ -100,14 +100,24 @@ app.MapGet("/products", (BangazonBEDbContext db) =>
 // Get Orders
 app.MapGet("/orders", (BangazonBEDbContext db) =>
 {
-    var orders = db.Orders.ToList();
+    var orders = db.Orders.Include(o => o.Products).ToList();
+
     return Results.Ok(orders);
 });
+
+//Get most recent 20 products
+app.MapGet("/", (BangazonBEDbContext db) =>
+{
+    var latestTwenty = db.Products.OrderByDescending(p => p.Id)
+    .Take(20)
+    .ToList();
+});
+
 
 //Get single product by product Id
 app.MapGet("/products/{productId}", (BangazonBEDbContext db, int productId) =>
 {
-    Product chosenProduct = db.Products.SingleOrDefault(p => p.Id == productId);
+    Product chosenProduct = db.Products.Include(p => p.Category).SingleOrDefault(p => p.Id == productId);
 
     if (chosenProduct == null)
     {
@@ -141,21 +151,6 @@ app.MapGet("/products/search", (BangazonBEDbContext db, string query) =>
     return Results.Ok(filteredProducts);
 });
 
-//Create new product
-app.MapPost("/products", (BangazonBEDbContext db, Product newProduct) =>
-{
-    try
-    {
-        db.Products.Add(newProduct);
-        db.SaveChanges();
-        return Results.Created($"/products/{newProduct.Id}", newProduct);
-    }
-    catch
-    {
-        return Results.BadRequest("Couldn't create product, please try again!");
-    }
-});
-
 //Edit existing product
 app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedProduct) =>
 {
@@ -177,21 +172,6 @@ app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedP
 
     return Results.Ok(product);
 
-});
-
-//Delete product
-app.MapDelete("/products", (BangazonBEDbContext db, int id) =>
-{
-    var productToDelete = db.Products.SingleOrDefault(p => p.Id == id);
-    
-    if (productToDelete == null)
-    {
-        return Results.BadRequest("No product matching provided Id");
-    }
-
-    db.Products.Remove(productToDelete);
-    db.SaveChanges();
-    return Results.Ok("Product deleted");
 });
 
 //Get orders by Id
@@ -273,20 +253,6 @@ app.MapDelete("/orders/{orderId}/{productId}", (BangazonBEDbContext db, int orde
     order.Products.Remove(product);
     db.SaveChanges();
     return Results.Ok("Product removed from order.");
-});
-
-//Delete order
-app.MapDelete("/orders/{id}", (BangazonBEDbContext db, int id) =>
-{
-    var order = db.Orders.SingleOrDefault(o => o.Id == id);
-
-    if (order == null)
-    {
-        return Results.NotFound("Order not found.");
-    }
-    db.Orders.Remove(order);
-    db.SaveChanges();
-    return Results.Ok("Order deleted");
 });
 
 //Get Categories
