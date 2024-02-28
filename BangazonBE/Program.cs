@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Hosting;
 using BangazonBE.DTOs;
+using System.Collections.Generic;
 
 
 
@@ -97,14 +98,6 @@ app.MapGet("/products", (BangazonBEDbContext db) =>
     return db.Products.ToList();
 });
 
-// Get Orders
-app.MapGet("/orders", (BangazonBEDbContext db) =>
-{
-    var orders = db.Orders.Include(o => o.Products).ToList();
-
-    return Results.Ok(orders);
-});
-
 //Get most recent 20 products
 app.MapGet("/", (BangazonBEDbContext db) =>
 {
@@ -151,27 +144,12 @@ app.MapGet("/products/search", (BangazonBEDbContext db, string query) =>
     return Results.Ok(filteredProducts);
 });
 
-//Edit existing product
-app.MapPatch("/products/{id}", (BangazonBEDbContext db, int id, Product updatedProduct) =>
+// Get Orders
+app.MapGet("/orders", (BangazonBEDbContext db) =>
 {
-    var product = db.Products.SingleOrDefault(p => p.Id == id);
+    var orders = db.Orders.Include(o => o.Products).ToList();
 
-    if (product == null)
-    {
-        return Results.NotFound("No product matching the provided Id.");
-    }
-
-    product.Name = updatedProduct.Name;
-    product.Description = updatedProduct.Description;
-    product.Price = updatedProduct.Price;
-    product.ImageUrl = updatedProduct.ImageUrl;
-    product.QuantityAvailable = updatedProduct.QuantityAvailable;
-    product.CategoryId = updatedProduct.CategoryId;
-
-    db.SaveChanges();
-
-    return Results.Ok(product);
-
+    return Results.Ok(orders);
 });
 
 //Get orders by Id
@@ -259,6 +237,20 @@ app.MapDelete("/orders/{orderId}/{productId}", (BangazonBEDbContext db, int orde
 app.MapGet("/categories", (BangazonBEDbContext db) =>
 {
     return db.Categories.ToList();
+});
+
+//Get products by category id
+app.MapGet("/categories/{id}/products", (BangazonBEDbContext db, int id) =>
+{
+    var productsWithCategoryId = db.Products.Where(p => p.CategoryId == id)
+    .ToList();
+
+    if (productsWithCategoryId == null)
+    {
+        return Results.NotFound("No products of that category found.");
+    }
+
+    return Results.Ok(productsWithCategoryId);
 });
 
 app.Run();

@@ -120,9 +120,9 @@ using BangazonBE.Models;
                 new Product
                 {
                     Id = 1,
-                    Name = "Samsung Smart TV",
+                    Name = "65 Inch Samsung Smart TV",
                     Description = "Super high def QLED display with crazy powerful processor for 8K upscaling.",
-                    Price = 3999.99M,
+                    Price = 2999.99M,
                     ImageUrl = "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6535/6535209_sd.jpg;maxHeight=400;maxWidth=600",
                     QuantityAvailable = 10,
                     SellerId = 5,
@@ -160,6 +160,17 @@ using BangazonBE.Models;
                     QuantityAvailable = 3,
                     SellerId = 4,
                     CategoryId = 3
+                },
+                new Product
+                {
+                    Id = 5,
+                    Name = "55 Inch Vizio Smart TV",
+                    Description = "A top notch 4k streaming experience at a low price.",
+                    Price = 499.99M,
+                    ImageUrl = "https://target.scene7.com/is/image/Target/GUEST_eaedb9ad-9979-491e-9ab6-a820f39ae91e?wid=488&hei=488&fmt=pjpeg",
+                    QuantityAvailable = 20,
+                    SellerId = 3,
+                    CategoryId = 1
                 }
             });
 
