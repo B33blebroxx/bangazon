@@ -27,8 +27,20 @@ builder.Services.Configure<JsonOptions>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5003")
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
 
 var app = builder.Build();
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -53,6 +65,20 @@ app.MapPost("/register", (BangazonBEDbContext db, User newUser) =>
         return Results.BadRequest("Couldn't create new user, please try again!");
     }
 });
+
+//Check user
+app.MapGet("/checkuser/{uid}", (BangazonBEDbContext db, string uid) =>
+{
+    var user = db.Users.Where(user => user.Uid == uid).ToList();
+
+    if (uid == null)
+    {
+        return Results.NotFound("User not registered");
+    }
+
+    return Results.Ok(user);
+});
+
 
 //Get all users
 app.MapGet("/users", (BangazonBEDbContext db) =>
