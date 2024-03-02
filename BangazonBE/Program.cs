@@ -121,13 +121,13 @@ app.MapGet("/users/name-search", (BangazonBEDbContext db, string query) =>
 //Get all products
 app.MapGet("/products", (BangazonBEDbContext db) =>
 {
-    return db.Products.ToList();
+    return db.Products.Include(p => p.Category).ToList();
 });
 
 //Get most recent 20 products
 app.MapGet("/", (BangazonBEDbContext db) =>
 {
-    var latestTwenty = db.Products.OrderByDescending(p => p.Id)
+    var latestTwenty = db.Products.Include(p => p.Category).OrderByDescending(p => p.Id)
     .Take(20)
     .ToList();
 });
